@@ -178,7 +178,7 @@ public class MainWindow extends UiPart<Stage> {
         importWindow.hide();
         helpWindow.hide();
         primaryStage.hide();
-        personDetailsWindow.hide();
+        personDetailsWindow.hide(); // potential bug when closing app before any person detail window has been created
 
     }
 

@@ -12,6 +12,7 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import seedu.address.authentication.Authentication;
 import seedu.address.commons.core.LogsCenter;
+import seedu.address.logic.parser.exceptions.ParseException;
 
 /**
  * Login Window for HR Helper.
@@ -39,26 +40,48 @@ public class LoginWindow extends UiPart<Stage> {
      */
     public LoginWindow(Stage primaryStage) {
         super(FXML, new Stage());
-
+        logger.info("=============================[ Initializing Authentication ]===========================");
+        this.getRoot().setResizable(false);
         // Dependencies
         this.primaryStage = primaryStage;
     }
 
+    /**
+     * Handles the Login button being pressed.
+     */
     @FXML
-    void handleButtonPress(ActionEvent event) throws Exception {
+    void handleButtonPress(ActionEvent event) {
         logger.info("Button pressed");
-        parseDetails();
+        try {
+            parseDetails();
+        } catch (ParseException e) {
+            logger.info(e.toString());
+        }
+    }
+
+    /**
+     * Handles the Enter key pressed event.
+     */
+    @FXML
+    private void handleAuthentication() {
+        logger.info("Enter button pressed");
+        try {
+            parseDetails();
+        } catch (ParseException e) {
+            logger.info(e.toString());
+        }
     }
 
     /**
      * Parse the username and password inputted.
      */
-    private void parseDetails() {
+    private void parseDetails() throws ParseException {
         if (username.getText().trim().equals("")) {
-            logger.info("=============================[ Initializing Authentication ]===========================");
             prompt.setText("Enter Username");
+            throw new ParseException("Username is empty");
         } else if (password.getText().trim().equals("")) {
             prompt.setText("Enter Password");
+            throw new ParseException("Password is empty");
         } else {
             userName = username.getText();
             passWord = password.getText();
@@ -71,15 +94,13 @@ public class LoginWindow extends UiPart<Stage> {
     /**
      * Authenticate the username and password inputted
      */
-    private boolean authenticate() {
+    private void authenticate() {
         boolean success = Authentication.authenticate(userName, passWord);
         if (!success) {
             prompt.setText("Incorrect Username/Password!");
-            return false;
         } else {
             logger.info("Authentication successful!");
             hide();
-            return true;
         }
     }
 
@@ -104,9 +125,8 @@ public class LoginWindow extends UiPart<Stage> {
     @FXML
     private void handleExit() {
         logger.info("Forcibly exiting HR Helper");
-        getRoot().close();
-        primaryStage.close();
         Platform.exit();
+        logger.info("Closing HR Helper");
         System.exit(0);
     }
 }
