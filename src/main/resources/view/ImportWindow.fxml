@@ -21,7 +21,7 @@
                 <URL value="@ImportWindow.css" />
             </stylesheets>
 
-            <HBox alignment="CENTER" fx:id="importMessageContainer" >
+            <HBox alignment="CENTER" fx:id="importMessageContainer">
                 <children>
                     <Label fx:id="importMessage" text="Label">
                         <HBox.margin>
@@ -29,12 +29,17 @@
                         </HBox.margin>
                     </Label>
                     <StackPane fx:id="fileDirectoryContainer">
-                        <TextField fx:id="inputDir" onAction="#importCsv" promptText="Choose Directory">
+                        <TextField fx:id="fileDirectory" promptText="Choose Directory">
                             <HBox.margin>
                                 <Insets right="5.0" />
                             </HBox.margin>
                         </TextField>
                     </StackPane>
+                    <Button fx:id="importButton" mnemonicParsing="false" onAction="#importCsv" text="import .csv">
+                        <HBox.margin>
+                            <Insets left="5.0" />
+                        </HBox.margin>
+                    </Button>
                 </children>
                 <opaqueInsets>
                     <Insets bottom="10.0" left="5.0" right="10.0" top="5.0" />

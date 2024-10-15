@@ -14,7 +14,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import seedu.address.commons.core.LogsCenter;
-import seedu.address.logic.Logic;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.logic.parser.exceptions.ParseException;
 
@@ -26,22 +25,22 @@ public class ImportWindow extends UiPart<Stage> {
 
     private static final Logger logger = LogsCenter.getLogger(ImportWindow.class);
     private static final String FXML = "ImportWindow.fxml";
-    private final Logic logic;
+    private final MainWindow mainWindow;
 
     @FXML
     private Label importMessage;
 
     @FXML
-    private TextField inputDir;
+    private TextField fileDirectory;
 
     /**
      * Constructs importWindow
-     * @param logic
+     * @param mainWindow
      */
-    public ImportWindow(Logic logic) {
+    public ImportWindow(MainWindow mainWindow) {
         super(FXML, new Stage());
         importMessage.setText(IMPORT_MESSAGE);
-        this.logic = logic;
+        this.mainWindow = mainWindow;
     }
 
     /**
@@ -94,10 +93,9 @@ public class ImportWindow extends UiPart<Stage> {
      */
     @FXML
     private void importCsv() {
-        String filePath = inputDir.getText();
+        String filePath = fileDirectory.getText();
         if (isValidCsvPath(filePath)) {
             try (Scanner scanner = new Scanner(new File(filePath))) {
-                scanner.nextLine();
                 while (scanner.hasNextLine()) {
                     String line = scanner.nextLine();
                     String[] data = Pattern.compile(",(?=(?:[^\"]|\"[^\"]*\")*$)").split(line);
@@ -105,12 +103,9 @@ public class ImportWindow extends UiPart<Stage> {
                     String number = data[1];
                     String email = data[2];
                     String address = data[3];
-                    String allTags = data[4];
-                    String tagCommand = tagsArray(allTags);
-                    String command = String.format("add n/%s p/%s e/%s a/%s %s",
-                            name, number, email, address, tagCommand);
+                    String command = String.format("add n/%s p/%s e/%s a/%s", name, number, email, address);
                     System.out.println(command);
-                    this.logic.execute(command);
+                    this.mainWindow.execute(command);
                 }
             } catch (FileNotFoundException | CommandException | ParseException e) {
                 e.printStackTrace();
@@ -118,25 +113,10 @@ public class ImportWindow extends UiPart<Stage> {
         } else {
             Alert alert = new Alert(Alert.AlertType.INFORMATION,
                     "The path is invalid, try the format:\n C:/path/to/file.csv", ButtonType.OK);
-            alert.setHeaderText(null);
+            alert.setHeaderText(null); // Optional: remove header text
             alert.setTitle("Invalid Import");
             alert.showAndWait();
         }
-    }
-
-    private static String tagsArray(String tagsString) {
-        String trimmed = tagsString.substring(1, tagsString.length() - 1).trim();
-        String[] tags = trimmed.split("\\s*,\\s*");
-        StringBuilder result = new StringBuilder();
-
-        for (int i = 0; i < tags.length; i++) {
-            result.append("t/").append(tags[i]);
-            if (i < tags.length - 1) {
-                result.append(" ");
-            }
-        }
-
-        return result.toString();
     }
 
     /**

@@ -1,6 +1,5 @@
 package seedu.address.ui;
 
-
 import java.util.logging.Logger;
 
 import javafx.event.ActionEvent;
@@ -17,8 +16,6 @@ import seedu.address.logic.Logic;
 import seedu.address.logic.commands.CommandResult;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.logic.parser.exceptions.ParseException;
-
-
 
 /**
  * The Main Window. Provides the basic application layout containing
@@ -39,7 +36,6 @@ public class MainWindow extends UiPart<Stage> {
     private ResultDisplay resultDisplay;
     private HelpWindow helpWindow;
     private ImportWindow importWindow;
-    private ExportWindow exportWindow;
 
     @FXML
     private StackPane commandBoxPlaceholder;
@@ -72,8 +68,7 @@ public class MainWindow extends UiPart<Stage> {
         setAccelerators();
 
         helpWindow = new HelpWindow();
-        importWindow = new ImportWindow(this.logic);
-        exportWindow = new ExportWindow(this.logic);
+        importWindow = new ImportWindow(this);
     }
 
     public Stage getPrimaryStage() {
@@ -157,7 +152,7 @@ public class MainWindow extends UiPart<Stage> {
     }
 
     /**
-     * Opens the import window or focuses on it if it's already opened.
+     * Opens the help window or focuses on it if it's already opened.
      */
     @FXML
     public void handleImport() {
@@ -165,19 +160,6 @@ public class MainWindow extends UiPart<Stage> {
             importWindow.show();
         } else {
             importWindow.focus();
-        }
-    }
-
-
-    /**
-     * Opens the export window or focuses on it if it's already opened.
-     */
-    @FXML
-    public void handleExport() {
-        if (!exportWindow.isShowing()) {
-            exportWindow.show();
-        } else {
-            exportWindow.focus();
         }
     }
 
@@ -226,6 +208,23 @@ public class MainWindow extends UiPart<Stage> {
             return commandResult;
         } catch (CommandException | ParseException e) {
             logger.info("An error occurred while executing command: " + commandText);
+            resultDisplay.setFeedbackToUser(e.getMessage());
+            throw e;
+        }
+    }
+
+    /**
+     * Execute wrapper to share with other classes
+     * @param command
+     * @return CommandResult
+     * @throws CommandException
+     * @throws ParseException
+     */
+    public CommandResult execute(String command) throws CommandException, ParseException {
+        try {
+            return executeCommand(command);
+        } catch (CommandException | ParseException e) {
+            logger.info("An error occurred while executing command: " + command);
             resultDisplay.setFeedbackToUser(e.getMessage());
             throw e;
         }
